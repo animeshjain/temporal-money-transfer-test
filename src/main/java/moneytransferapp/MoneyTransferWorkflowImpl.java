@@ -6,7 +6,6 @@ import io.temporal.common.RetryOptions;
 
 import java.time.Duration;
 
-// @@@SNIPSTART money-transfer-project-template-java-workflow-implementation
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     // RetryOptions specify how to automatically handle retries when Activities fail.
     private final RetryOptions retryoptions = RetryOptions.newBuilder()
@@ -29,9 +28,13 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     // Activity method executions can be orchestrated here or from within other Activity methods.
     @Override
     public void transfer(String fromAccountId, String toAccountId, String referenceId, double amount) {
-
+        String workflowId = Workflow.getInfo().getWorkflowId();
+        int workflowAttempt = Workflow.getInfo().getAttempt();
+        long threadId = Thread.currentThread().getId();
+        System.out.printf("** WORKFLOW (Calling WITHDRAW) ** [MoneyTransferWorkflowImpl.transfer] workflowId = %s, workflow attempt count = %d, thread = %d\n", workflowId, workflowAttempt, threadId);
         account.withdraw(fromAccountId, referenceId, amount);
+        System.out.printf("** WORKFLOW (Calling DEPOSIT) ** [MoneyTransferWorkflowImpl.transfer] workflowId = %s, workflow attempt count = %d, thread = %d\n", workflowId, workflowAttempt, threadId);
         account.deposit(toAccountId, referenceId, amount);
+        System.out.printf("* ------ WORKFLOW (FIN) ------- * [MoneyTransferWorkflowImpl.transfer] workflowId = %s, workflow attempt count = %d, thread = %d\n\n", workflowId, workflowAttempt, threadId);
     }
 }
-// @@@SNIPEND
