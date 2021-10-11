@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
-public class InitiateMoneyTransfer {
+public class ApproveMoneyTransfer {
 
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-hhmmss");
 
@@ -24,7 +24,7 @@ public class InitiateMoneyTransfer {
 
     public static void main(String[] args) throws Exception {
         // WorkflowServiceStubs is a gRPC stubs wrapper that talks to the local Docker instance of the Temporal server.
-        MDC.put("traceId", "123456");
+        MDC.put("traceId", "abcdef");
         WorkflowServiceStubsOptions workflowServiceStubsOptions = WorkflowServiceStubsOptions.newBuilder()
                 .setTarget("100.91.145.58:7233")
                 .build();
@@ -37,25 +37,15 @@ public class InitiateMoneyTransfer {
                 .build();
         WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 
-        String workflowId = generateWorkflowId();
-        log.info("Workflow id for initiate transfer = {}", workflowId);
-        WorkflowOptions options = WorkflowOptions.newBuilder()
-                .setTaskQueue(Shared.MONEY_TRANSFER_TASK_QUEUE)
-                .setContextPropagators(Collections.singletonList(new TraceContextPropagator()))
-                .setWorkflowId(workflowId)
-                .build();
         // WorkflowStubs enable calls to methods as if the Workflow object is local, but actually perform an RPC.
-        MoneyTransferWorkflow workflow = client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+        MoneyTransferWorkflow workflow = client.newWorkflowStub(MoneyTransferWorkflow.class, "money-transfer-2021-10-11-040845");
 
-        String referenceId = UUID.randomUUID().toString();
-        String fromAccount = "001-001";
-        String toAccount = "002-002";
-        double amount = 18.74;
+        workflow.approve();
+
         // Asynchronous execution. This process will exit after making this call.
         // WorkflowExecution we = WorkflowClient.start(workflow::transfer, fromAccount, toAccount, referenceId, amount);
-        log.info("Transfer of {} from account {} to account {} is processing", amount, fromAccount, toAccount);
-        // System.out.printf("WorkflowID: %s RunID: %s\n", we.getWorkflowId(), we.getRunId());
-        workflow.transfer(fromAccount, toAccount, referenceId, amount);
+        // log.info("WorkflowID: {} RunID: {}", we.getWorkflowId(), we.getRunId());
+
         System.exit(0);
     }
 
