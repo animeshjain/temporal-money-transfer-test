@@ -24,7 +24,8 @@ public class ApproveMoneyTransfer {
 
     public static void main(String[] args) throws Exception {
         // WorkflowServiceStubs is a gRPC stubs wrapper that talks to the local Docker instance of the Temporal server.
-        MDC.put("traceId", "abcdef");
+        String traceId = "abcdef";
+        MDC.put("traceId", traceId);
         WorkflowServiceStubsOptions workflowServiceStubsOptions = WorkflowServiceStubsOptions.newBuilder()
                 .setTarget("100.91.145.58:7233")
                 .build();
@@ -33,14 +34,13 @@ public class ApproveMoneyTransfer {
 
         WorkflowClientOptions clientOptions = WorkflowClientOptions.newBuilder()
                 .setNamespace("animesh-dev")
-                .setContextPropagators(Collections.singletonList(new TraceContextPropagator()))
                 .build();
         WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 
         // WorkflowStubs enable calls to methods as if the Workflow object is local, but actually perform an RPC.
-        MoneyTransferWorkflow workflow = client.newWorkflowStub(MoneyTransferWorkflow.class, "money-transfer-2021-10-11-040845");
+        MoneyTransferWorkflow workflow = client.newWorkflowStub(MoneyTransferWorkflow.class, "money-transfer-2021-10-12-074403");
 
-        workflow.approve();
+        workflow.approve(new SignalContext(traceId));
 
         // Asynchronous execution. This process will exit after making this call.
         // WorkflowExecution we = WorkflowClient.start(workflow::transfer, fromAccount, toAccount, referenceId, amount);

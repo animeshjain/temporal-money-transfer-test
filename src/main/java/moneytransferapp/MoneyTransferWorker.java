@@ -33,7 +33,7 @@ public class MoneyTransferWorker {
 
         // Worker factory is used to create Workers that poll specific Task Queues.
         WorkerFactoryOptions options = WorkerFactoryOptions.newBuilder()
-                .setWorkerInterceptors(new SignalWorkerInterceptor())
+//                .setWorkerInterceptors(new SignalWorkerInterceptor())
                 .build();
         WorkerFactory factory = WorkerFactory.newInstance(client, options);
         Worker worker = factory.newWorker(Shared.MONEY_TRANSFER_TASK_QUEUE);
@@ -49,28 +49,35 @@ public class MoneyTransferWorker {
     }
 }
 
-@Slf4j
-class SignalWorkerInterceptor implements WorkerInterceptor {
-    @Override
-    public WorkflowInboundCallsInterceptor interceptWorkflow(WorkflowInboundCallsInterceptor next) {
-        return new SignalWorkflowInboundCallsInterceptor(next);
-    }
-
-    @Override
-    public ActivityInboundCallsInterceptor interceptActivity(ActivityInboundCallsInterceptor next) {
-        return next;
-    }
-}
-
-@Slf4j
-class SignalWorkflowInboundCallsInterceptor extends WorkflowInboundCallsInterceptorBase {
-    public SignalWorkflowInboundCallsInterceptor(WorkflowInboundCallsInterceptor next) {
-        super(next);
-    }
-
-    @Override
-    public void handleSignal(SignalInput input) {
-        log.info("(Intercepted) Handle Signal {}", input.getSignalName());
-        super.handleSignal(input);
-    }
-}
+//@Slf4j
+//class SignalWorkerInterceptor implements WorkerInterceptor {
+//    @Override
+//    public WorkflowInboundCallsInterceptor interceptWorkflow(WorkflowInboundCallsInterceptor next) {
+//        return new SignalWorkflowInboundCallsInterceptor(next);
+//    }
+//
+//    @Override
+//    public ActivityInboundCallsInterceptor interceptActivity(ActivityInboundCallsInterceptor next) {
+//        return next;
+//    }
+//}
+//
+//@Slf4j
+//class SignalWorkflowInboundCallsInterceptor extends WorkflowInboundCallsInterceptorBase {
+//    public SignalWorkflowInboundCallsInterceptor(WorkflowInboundCallsInterceptor next) {
+//        super(next);
+//    }
+//
+//    @Override
+//    public void handleSignal(SignalInput input) {
+//        log.info("(Intercepted) Handle Signal {}", input.getSignalName());
+//        for (Object argument : input.getArguments()) {
+//            if (argument instanceof SignalContext) {
+//                SignalContext signalContext = (SignalContext) argument;
+//                log.info("adding signal trace id {}", signalContext.getTraceId());
+//                MDC.put("signalTraceId", signalContext.getTraceId());
+//            }
+//        }
+//        super.handleSignal(input);
+//    }
+//}

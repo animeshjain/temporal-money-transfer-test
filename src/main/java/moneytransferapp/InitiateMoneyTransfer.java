@@ -24,7 +24,7 @@ public class InitiateMoneyTransfer {
 
     public static void main(String[] args) throws Exception {
         // WorkflowServiceStubs is a gRPC stubs wrapper that talks to the local Docker instance of the Temporal server.
-        MDC.put("traceId", "123456");
+        MDC.put("traceId", "trace-id-"+UUID.randomUUID().getLeastSignificantBits());
         WorkflowServiceStubsOptions workflowServiceStubsOptions = WorkflowServiceStubsOptions.newBuilder()
                 .setTarget("100.91.145.58:7233")
                 .build();
@@ -33,7 +33,6 @@ public class InitiateMoneyTransfer {
 
         WorkflowClientOptions clientOptions = WorkflowClientOptions.newBuilder()
                 .setNamespace("animesh-dev")
-                .setContextPropagators(Collections.singletonList(new TraceContextPropagator()))
                 .build();
         WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 

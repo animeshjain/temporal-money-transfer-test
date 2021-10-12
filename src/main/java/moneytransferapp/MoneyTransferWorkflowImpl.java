@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.util.Collections;
 
 @Slf4j
-public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
+public class MoneyTransferWorkflowImpl extends BaseWorkflow implements MoneyTransferWorkflow {
     // RetryOptions specify how to automatically handle retries when Activities fail.
     private final RetryOptions retryoptions = RetryOptions.newBuilder()
             .setInitialInterval(Duration.ofSeconds(1))
@@ -44,6 +44,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         Workflow.await(() -> approve);
 
+        insertSignalContextToMDC();
+        log.info("Signal trace id = {}", MDC.get("signalTraceId"));
         log.info("** WORKFLOW (Calling WITHDRAW) ** [MoneyTransferWorkflowImpl.transfer] workflowId = {}, workflow attempt count = {}, thread = {}", workflowId, workflowAttempt, threadId);
         account.withdraw(fromAccountId, referenceId, amount);
         log.info("** WORKFLOW (Calling DEPOSIT) ** [MoneyTransferWorkflowImpl.transfer] workflowId = {}, workflow attempt count = {}, thread = {}", workflowId, workflowAttempt, threadId);
@@ -52,8 +54,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     }
 
     @Override
-    public void approve() {
-        MDC.put("traceId", "456789");
+    public void approve(SignalContext signalContext) {
+        updateSignalContext(signalContext);
         approve = true;
     }
 }

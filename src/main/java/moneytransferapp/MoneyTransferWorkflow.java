@@ -15,6 +15,6 @@ public interface MoneyTransferWorkflow {
   void transfer(String fromAccountId, String toAccountId, String referenceId, double amount);
 
   @SignalMethod
-  void approve();
+  void approve(SignalContext signalContext);
 }
 

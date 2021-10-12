@@ -26,7 +26,7 @@ public class TraceContextPropagator implements ContextPropagator {
     @Override
     public Map<String, Payload> serializeContext(Object context) {
         String traceId = (String) context;
-//        log.info("serialize context called, context = {}", traceId);
+        log.trace("serialize context called, context = {}", traceId);
         if (traceId != null) {
             return Collections.singletonMap("traceId", DataConverter.getDefaultInstance().toPayload(traceId).get());
         } else {
@@ -36,7 +36,7 @@ public class TraceContextPropagator implements ContextPropagator {
 
     @Override
     public Object deserializeContext(Map<String, Payload> context) {
-//        log.info("deserialize context called");
+        log.trace("deserialize context called with context {}", context);
         if (context.containsKey("traceId")) {
             return DataConverter.getDefaultInstance().fromPayload(context.get("traceId"), String.class, String.class);
         } else {
@@ -47,14 +47,14 @@ public class TraceContextPropagator implements ContextPropagator {
     @Override
     public Object getCurrentContext() {
         String traceId = MDC.get("traceId");
-        log.info("getting currentContext = {}", traceId);
+        log.trace("getting currentContext = {}", traceId);
         return traceId;
     }
 
     @Override
     public void setCurrentContext(Object context) {
         String traceId = String.valueOf(context);
-        log.info("setCurrentContext = {}", traceId);
+        log.trace("setCurrentContext = {}", traceId);
         MDC.put("traceId", traceId);
     }
 }
